@@ -1,12 +1,13 @@
+```   
    +-----------------------------------------------------------------------------+
-   |  [!] Legal disclaimer: Usage of INURLBR for attacking targets without prior |
-   |  mutual consent is illegal.                                                 |
+   |  [!] Legal disclaimer: Usage of this shit program for attacking targets     |
+   |  without prior mutual consent is illegal.                                   |
    |  It is the end user's responsibility to obey all applicable local, state and|
    |  federal laws.                                                              |
    |  Developers assume no liability and are not responsible for any misuse or   |
    |  damage caused by this program                                              |
    +-----------------------------------------------------------------------------+
-
+```
 # goDuck 
 O nome é goDuck porquê o google me ferrou por mais de 4 dias na corrida e ai eu apelei pro DuckDuckGo, O DDG é foda!
 

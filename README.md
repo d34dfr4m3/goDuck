@@ -3,11 +3,15 @@ O nome é goDuck porquê o google me ferrou por mais de 4 dias na corrida e ai e
 
 - Sim, isso é um esboço, ta tudo mal feito
 #### How To
+- fazer o arquivo com dependencias p/ instalação.
+- Getopt
 - Implementar função de ler um arquivo com dorks e executar.
 - Salvar os resultados em um arquivo.
 - Optmizar a query. 
 - Analisar se existe uma forma de deixar a query mais acertiva. 
 - Banner, eu gosto de banners. 
+- Opção de usar com a Tor, já que o DuckDuckGo não bloqueia de imediato, só depois de algumas querys, o problema é que vai ser necessário ficar reiniciando o circuito a cada block.
+- Refatorar é utopia
 
 ##### Requisitos
 - https://github.com/joequery/requests-sslv3.git(?)

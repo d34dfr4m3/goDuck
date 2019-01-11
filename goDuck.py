@@ -9,6 +9,7 @@ import random
 import asyncio
 import urllib3
 import time
+import getopt
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Some aux variables and global  stuff u know, to do shit.
@@ -36,12 +37,37 @@ HTTP_ERR = {
 def usage():
     print("""Welcome to goDuck, the badass google hacking gambiarra using DDG
     We will try to perform inurl parameter to get some links.
+    Options:
+     -q -> Query String
+     -f -> A File with dorks separete by line
+     -o -> output file
     Here some usage examples:
-       ./goduck.py "db/CART/product_details.php?product_id="
-       ./goduck.py "shopreviewadd.php?id="
-       ./goduck.py "global/product/product.php?gubun="
+       If you want to search by a single dork:
+         ./goduck.py -q "db/CART/product_details.php?product_id="
+         ./goduck.py -q "shopreviewadd.php?id="
+         ./goduck.py -q "global/product/product.php?gubun="
+       If you want to search using a file filled with dorks:
+         ./goduck.py -f /path/to/file
+         ./goduck.py -f file.txt
+         ./goduck.py -f file
+ 
+        -o Using output option
+         ./goduck.py -f file -o logs.txt
+    Thats All morty!
        """)
     exit(1)
+
+def banner():
+    print('''
+             ____             _    
+  __ _  ___ |  _ \ _   _  ___| | __
+ / _` |/ _ \| | | | | | |/ __| |/ /
+| (_| | (_) | |_| | |_| | (__|   < 
+ \__, |\___/|____/ \__,_|\___|_|\_\
+ |___/                             
+
+                                https://github.com/d34dfr4m3/goDuck
+    ''')
 
 def get_country():
     country_list = ['BR','US','RU','AR','CL']
@@ -80,6 +106,7 @@ async def show(proxies):
 
 # Function to start the another function to grab proxies.
 def proxypool(generate=None,proxie_num=5):
+  global sleeper
   global pool
   if generate:
     print("[+] Building a new proxy pool")
@@ -141,14 +168,11 @@ def get_page(URL,proxie):
     print("[*] Request Error:" + str(error))
     return False
 
-def main(search=None):
-  # main here blabla
-  if len(search) <= 1:
-    usage()
-  if not search:
-    search=sys.argv[1:][0]
-    
+def main(search=None,outf=None):
+  global sleeper 
+  count=1
   proxypool(generate=True)
+  print("[!] - Query: "+search)
   page=get_page(random.choice(URLS).format(search,search),proxypool())
   while not page:
     print("[+] - Busted, wainting %s seconds" %(sleeper))
@@ -170,15 +194,64 @@ def main(search=None):
           gold.append(link_href)
 
   if len(gold) == 0:
-    print("[!!] Got 0 Results, maybe just bad luck or query fails. Try to run again using diferent proxies maybe")
+    print("[!!] Got 0 Results. Going to next try %s/3 " %(count))
     main(search)
     count+=1
-    if count <= 3:
+    if count >= 3:
       print("[!] BAD LUCK")
-      exit(1)
   else: 
-    print('[*] Dumping %s results from query: %s ' %(len(gold),query))
+    if query:
+      if outf:
+         outf.write('[*] Dumping %s results from query: %s \n' %(len(gold),query))
+      print('[*] Dumping %s results from query: %s ' %(len(gold),query))
+    else:
+      if outf:
+         outf.write('[*] Dumping %s results from query: %s \n' %(len(gold),query))
+      print('[*] Dumping %s results from query: %s ' %(len(gold),search))
+    count=0
+    sleeper=2
     for url_gold in gold:
+      if outf:
+         outf.write(url_gold+'\n')
       print("[--] "+url_gold)
 
-main(sys.argv[1:][0])
+
+if __name__ == "__main__":
+  outputfile=None
+  ListMode=None
+  SingleMode=None
+  banner()
+  if len(sys.argv) <= 1:
+    usage()
+  try:
+      opts,args = getopt.getopt(sys.argv[1:], "q:f:o:h")
+  except getopt.GetoptError as err:
+      print("[!!] Error in getopt: ", err)
+      usage()
+  for option, arg in opts:
+    if option == "-q":
+      SingleMode=True
+      search=arg
+    elif option == "-o":
+      outputfile=arg
+    elif option == "-f":
+      ListMode=True
+      fileread=arg
+    elif option == '-h':
+      usage()
+    else:
+      usage()
+  print('check')
+  if SingleMode and ListMode:
+    print("[!] Dude, use -q or -f")
+  elif SingleMode:
+    outf=open(outputfile,'a')
+    main(search,outf) 
+    outf.close()
+  elif ListMode:
+    f = open(fileread,'r')
+    outf=open(outputfile,'a')
+    for i in f:
+      main(i,outf) 
+    outf.close()
+    f.close()
